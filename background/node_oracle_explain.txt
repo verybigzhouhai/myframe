@@ -1,0 +1,15 @@
+以oracle11.2为例的环境配置
+1、安装  Microsoft Visual Studio 2005 Redistributable，下载地址：https://www.microsoft.com/en-us/download/details.aspx?id=18471
+2、下载  instantclient-basic-windows.x64-11.2.0.4.0.zip和 instantclient-sdk-windows.x64-11.2.0.4.0.zip，地址 http://www.oracle.com/technetwork/topics/winx64soft-089540.html
+3、下载完成后把它们解压到 D:\oracle\instantclient_12_2 文件夹中(可自定义目录), 由于两个 zip 中的文件各不相同, 所以合并到同一个文件夹也不会发生覆盖.
+
+Windows环境变量设置
+
+系统环境变量新增以下3个：
+OCI_LIB_DIR=D:\oracle\instantclient_12_2\sdk\lib\msvc
+OCI_INC_DIR=D:\oracle\instantclient_12_2\sdk\include
+OCI_VERSION=11
+
+path环境变量 里加上 以下两个，注意先后顺序
+D:\oracle\instantclient_11_2\vc9
+D:\oracle\instantclient_11_2
