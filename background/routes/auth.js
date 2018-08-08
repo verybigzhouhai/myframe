@@ -5,7 +5,7 @@ var mysqldb = require('mysql');
 mysqldb.autoCommit = true;
 
 //数据库链接
-var connectionString = mysql.createConnection({
+var connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '123456',
@@ -21,37 +21,26 @@ router.post('/login', function(req, res, next) {
     var username = req.body.username;
     var password = req.body.password;
     password = md5(password);
-    mysqldb.getConnection(connectionString,
-        function(err, connection) {
-            if (err) {
-                console.error(1);
-                console.error(err.message);
-                return;
+
+    connection.connect();
+    var sql = "select PASSWORD,ROLE_ID FROM PIPES_USER WHERE USER_NAME = '" + username + "'";
+    connection.query(sql, function(error, results, fields) {
+        if (error) throw error;
+
+        if (result.rows[0]) {
+            if (result.rows[0][0] == password) {
+                req.session.name = username;
+                console.log(username);
+                res.status(200), res.send(JSON.stringify({ code: 200, ROLE_ID: result.rows[0][1] }));
+            } else {
+                res.status(200), res.send(JSON.stringify({ code: 101 }));
             }
+        } else {
+            res.status(200), res.send(JSON.stringify({ code: 101 }));
+        }
 
-            var sql = "select PASSWORD,ROLE_ID FROM PIPES_USER WHERE USER_NAME = '" + username + "'";
-            connection.execute(sql, [], function(err, result) {
-                if (err) {
-                    console.error(1);
-                    console.error(err.message);
-                    doRelease(connection);
-                    return;
-                }
-                if (result.rows[0]) {
-                    if (result.rows[0][0] == password) {
-                        req.session.name = username;
-                        console.log(username);
-                        res.status(200), res.send(JSON.stringify({ code: 200, ROLE_ID: result.rows[0][1] }));
-                    } else {
-                        res.status(200), res.send(JSON.stringify({ code: 101 }));
-                    }
-                } else {
-                    res.status(200), res.send(JSON.stringify({ code: 101 }));
-                }
-
-                doRelease(connection);
-            });
-        });
+        connection.end();
+    });
 });
 
 //退出
@@ -59,14 +48,5 @@ router.post('/logout', function(req, res, next) {
     req.session.name = undefined;
     res.status(200), res.send(JSON.stringify({ code: 200 }));
 });
-
-function doRelease(connection) {
-    connection.close(
-        function(err) {
-            if (err) {
-                console.error(err.message);
-            }
-        });
-}
 
 module.exports = router;
