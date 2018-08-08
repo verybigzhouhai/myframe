@@ -1,16 +1,16 @@
 var express = require('express');
 var md5 = require("md5");
 var router = express.Router();
-var oracledb = require('oracledb');
-oracledb.autoCommit = true;
+var mysqldb = require('mysql');
+mysqldb.autoCommit = true;
 
 //数据库链接
-var connectionString = {
-    user: "system",
-    password: "orcl",
-    connectString: "47.100.243.239:1521/orcl"
-}
-
+var connectionString = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: '123456',
+    database: 'test'
+});
 /* GET users listing. */
 router.get('/', function(req, res, next) {
     res.send('respond with a resource');
@@ -21,7 +21,7 @@ router.post('/login', function(req, res, next) {
     var username = req.body.username;
     var password = req.body.password;
     password = md5(password);
-    oracledb.getConnection(connectionString,
+    mysqldb.getConnection(connectionString,
         function(err, connection) {
             if (err) {
                 console.error(1);
