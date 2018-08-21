@@ -1,0 +1,17 @@
+//This file is automatically rebuilt by the Cesium build process.
+/*global define*/
+define(function() {
+    'use strict';
+    return "const vec4 lightSourceDiffuse = vec4(0.8,0.8,0.8,1.0);\n\
+const vec4 lightSourceAmbient = vec4(0.6,0.6,0.6,1.0);\n\
+vec4 czm_directionLight(vec3 normalEC,vec4 diffuseColor,vec4 ambientColor)\n\
+{\n\
+float diffuseIntensity = czm_getLambertDiffuse(czm_sunDirectionEC, normalEC);\n\
+vec4 diffuse = lightSourceDiffuse*diffuseColor*diffuseIntensity;\n\
+vec4 ambient = ambientColor*lightSourceAmbient;\n\
+vec4 mixColor = diffuse + ambient;\n\
+vec4 color = clamp(mixColor,vec4(0.0),vec4(1.0));\n\
+return color;\n\
+}\n\
+";
+});

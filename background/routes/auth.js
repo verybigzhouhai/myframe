@@ -1,16 +1,19 @@
+/*
+ *提供系统登入和登出功能
+ */
 var express = require('express');
 var md5 = require("md5");
 var router = express.Router();
 var mysqldb = require('mysql');
 mysqldb.autoCommit = true;
 
+var config = require('./config');
+
 //数据库链接
-var connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '123456',
-    database: 'test'
-});
+var connection = mysqldb.createConnection(config.db);
+
+connection.connect();
+
 /* GET users listing. */
 router.get('/', function(req, res, next) {
     res.send('respond with a resource');
@@ -22,24 +25,23 @@ router.post('/login', function(req, res, next) {
     var password = req.body.password;
     password = md5(password);
 
-    connection.connect();
-    var sql = "select PASSWORD,ROLE_ID FROM PIPES_USER WHERE USER_NAME = '" + username + "'";
-    connection.query(sql, function(error, results, fields) {
-        if (error) throw error;
 
-        if (result.rows[0]) {
-            if (result.rows[0][0] == password) {
+    var sql = "select PASSWORD,ROLE_ID FROM SYS_USER WHERE USER_NAME = '" + username + "'";
+    connection.query(sql, function(error, result, fields) {
+        console.log(result);
+        if (error) throw error;
+        console.log(result);
+        if (result) {
+            if (result[0].PASSWORD == password) {
                 req.session.name = username;
                 console.log(username);
-                res.status(200), res.send(JSON.stringify({ code: 200, ROLE_ID: result.rows[0][1] }));
+                res.status(200), res.send(JSON.stringify({ code: 200, ROLE_ID: result[0].ROLE_ID }));
             } else {
                 res.status(200), res.send(JSON.stringify({ code: 101 }));
             }
         } else {
             res.status(200), res.send(JSON.stringify({ code: 101 }));
         }
-
-        connection.end();
     });
 });
 

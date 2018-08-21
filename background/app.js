@@ -9,10 +9,12 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 var dataRouter = require('./routes/data');
-//var uploadRouter = require('./routes/upload');
+var sysRouter = require('./routes/sys');
+var authRouter = require('./routes/auth');
+var uploadRouter = require('./routes/upload');
+
+var config = require('./routes/config');
 
 var app = express();
 
@@ -36,8 +38,7 @@ app.use('/uploads', express.static('uploads'));
 
 //设置跨域访问
 app.all('*', function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:8080");
-    //res.header("Access-Control-Allow-Origin", "http://139.196.22.22:8080");
+    res.header("Access-Control-Allow-Origin", config.front_url);
     res.header("Access-Control-Allow-Headers", "Content-Type");
     res.header("Access-Control-Allow-Credentials", "true");
     res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
@@ -57,10 +58,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/data', dataRouter);
-//app.use('/uploads', uploadRouter);
+app.use('/sys', sysRouter);
+app.use('/auth', authRouter);
+app.use('/uploads', uploadRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
